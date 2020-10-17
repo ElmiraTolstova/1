@@ -1,0 +1,135 @@
+#include "stdafx.h"
+using namespace System;
+#include <iostream>
+#include <iomanip>
+#include <conio.h>
+#include <stdio.h>
+#include <string.h>
+#include <vector>
+using namespace std;
+void Choice();
+class TelephonRow
+{
+public:
+	char SurName[20];
+	char Name[20];
+	char SecondName[20];
+	int Year;
+	int Number;
+};
+class Telephon
+{
+public:
+	Telephon();
+	//~Telephon();			
+	void LoadFile();
+	void Dobavit();
+	void Ydalit();
+	void Naity();
+	void Analiz();
+	vector<TelephonRow*> Rows;
+	FILE* FilePtr;
+};
+Telephon TelDB;
+Telephon::Telephon()
+{
+}
+void Telephon::LoadFile()
+{
+	FilePtr = fopen("telephon.txt", "r+");
+	if (!FilePtr)
+		cout << "Невозможно открыть файл" << endl;
+	int i = 0;
+	while (!feof(FilePtr))
+	{
+		TelephonRow *NextRow = new TelephonRow();
+		i = fscanf(FilePtr, "%s %s %s %d %d", NextRow->SurName, NextRow->Name, NextRow->SecondName, &NextRow->Year, &NextRow->Number);
+		if (i == 0 || i == -1)
+			break;
+		if (i != 5)
+			cout << "Неправильный формат файла" << endl;
+		Rows.push_back(NextRow);
+	}
+}
+void Telephon::Dobavit()
+{
+	TelephonRow *NewRow = new TelephonRow();
+	cout << "Введите Ф И О абонента" << endl;
+	cin >> NewRow->SurName >> NewRow->Name >> NewRow->SecondName;
+	cout << "Введите номер телефона абонента:" << endl;
+	cin >> NewRow->Number;
+		cout << "Введите дату рождения абонента без пробелов" << endl;
+	cin >> NewRow->Year;
+	fprintf(FilePtr, "%s %s %s %d %d\n", NewRow->SurName, NewRow->Name, NewRow->SecondName, NewRow->Year, NewRow->Number);
+	Rows.push_back(NewRow);
+}
+void Telephon::Ydalit()
+{
+}
+void Telephon::Naity()
+{
+	bool find = false;
+	char surname[50];
+	cout << "Введите фамилию абонента" << endl;
+	cin >> surname;
+	for (vector<TelephonRow*>::iterator &i = Rows.begin(); i != Rows.end() && !find; i++)
+	{
+		if (strcmp((*i)->SurName, surname) == 0)
+		{
+			printf("%s %s %s %d %d\n", (*i)->SurName, (*i)->Name, (*i)->SecondName, (*i)->Year, (*i)->Number);
+			find = true;
+		}
+	}
+	if (!find)
+		cout << "Телефонные номера не найдены" << endl;																				//???????? ?????
+}
+void Telephon::Analiz()
+{
+	int year, c = 0;
+	cout << "Введите дату рождения абонента без пробелов" << endl;
+	cin >> year;
+	for (vector<TelephonRow*>::iterator i = Rows.begin(); i != Rows.end(); i++)
+	{
+		if (year == (*i)->Year)
+			c++;
+	}
+	cout << c << " телефонов найдено " << endl;
+}
+int main()
+{   setlocale(LC_ALL, "Russian");
+	TelDB.LoadFile();
+	Choice();
+	fclose(TelDB.FilePtr);
+		return 0;
+}
+void Choice()
+{
+	int control;
+	cout << "Выберите действие" << endl;
+	cout << "\n Меню:\n1.Ввести нового абонента в базу данных \n2.Найти абонента по фамилии \n3.Удалить номер абонента \n4. Найти абонента по дате рождения \n5.Выйти\n" << endl;
+	cin >> control;
+	for (;;)
+	{
+		switch (control)
+		{
+			case 1:
+				TelDB.Dobavit();
+				break;
+			case 2:
+				TelDB.Naity();
+				break;
+			case 3:
+				TelDB.LoadFile();
+				break;
+			case 4:
+				TelDB.Analiz();
+				break;
+			case 5:
+				return;
+			default:
+				cout << "Вы ввели неправильный номер действия.Введите номер заново." << endl;
+		}
+		cout << "Выберите действие" << endl;
+		cin >> control;
+	}
+}
