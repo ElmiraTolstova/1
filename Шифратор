@@ -1,0 +1,26 @@
+ using namespace std; 
+int main()
+{
+setlocale(LC_ALL, "Russian");
+  char s1[255] ; 
+  ifstream in ("imput.txt"); 
+  in>>s1; 
+  in.close(); 
+  cout<<s1<<"\n"; 
+    char key;   
+    cout << "Введите ключ: ";
+	cin >> key ;    
+    for (int n = 0; n < strlen(s1); n++)
+      {   s1[n] = s1[n] ^ key; }
+    cout << "Зашифрованное сообщение: " << s1 << "\n";      
+	  ofstream out("cd.txt"); 
+       out<<s1;       
+   out.close()    ;
+    for (int k = 0; k < strlen(s1); k++)
+    { s1[k] = s1[k] ^ key;     }       
+    cout << "Расшифрованное сообщение: " << s1 << "\n";    
+    ofstream out1 ("dc.txt"); 
+       out1<<s1;       
+   out1.close() ;    
+ return 0;
+}
